@@ -97,34 +97,20 @@ details.panel summary{font-weight:700;cursor:pointer;list-style:none;display:fle
 details.panel summary::-webkit-details-marker{display:none}
 details.panel summary::after{content:"＋";color:var(--muted)}
 details[open].panel summary::after{content:"－"}
-.gbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.gbtns .btn{padding:0 6px}
 .gbtns .btn.done{border-color:var(--green);color:var(--green);font-weight:700}
-/* 航照圖標果嶺 */
-.mapov{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column}
-.mapov[hidden]{display:none}
-.mapbar{flex:none;display:flex;align-items:center;gap:8px;background:var(--surface);border-bottom:1px solid var(--line);padding:max(8px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px))}
-.mapbar .mt{flex:1;text-align:center;font:700 17px/1.3 var(--text)}
-.mbtn{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font:500 26px/1 var(--text)}
-#mapc{position:relative;flex:1;min-height:0;overflow:hidden;background:#2B3A30;touch-action:none;cursor:crosshair;user-select:none;-webkit-user-select:none}
-#mapTiles img{position:absolute;left:0;top:0;pointer-events:none;-webkit-user-drag:none;max-width:none}
-.mk{position:absolute;transform:translate(-50%,-50%);pointer-events:none}
-.mk.cur{width:28px;height:28px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;font:700 13px/1 var(--text);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.6)}
-.mk.f,.dot.f{background:#2F80ED}.mk.c,.dot.c{background:#E9B51F}.mk.c{color:#14231B}.mk.b,.dot.b{background:#C8312B}
-.mk.oth{min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:rgba(255,255,255,.88);color:#14231B;font:700 13px/22px var(--num);text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.5)}
-.mk.me{width:16px;height:16px;border-radius:50%;background:#1A73E8;border:3px solid #fff;box-shadow:0 0 0 6px rgba(26,115,232,.3)}
-.mapzoom{position:absolute;right:10px;top:10px;display:grid;gap:6px}
-.mapzoom button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font:500 22px/1 var(--text)}
-.mapattr{position:absolute;left:6px;bottom:4px;font-size:10px;color:#fff;text-shadow:0 0 3px #000;pointer-events:none}
-.mapfoot{flex:none;display:grid;gap:8px;background:var(--surface);border-top:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.seg button{min-height:46px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-weight:600}
-.seg button[aria-pressed="true"]{border-color:var(--green);background:var(--tint);color:var(--green)}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
-.seg .ok{margin-left:4px;color:var(--green)}
-.maphint{margin:0;font-size:13px;color:var(--muted)}
-.maprow{display:flex;gap:16px;flex-wrap:wrap}
-.maprow [hidden]{display:none}
-#mapBtn{width:100%}
+/* 球道圖：OpenStreetMap 輪廓線條圖（測距頁上半部） */
+.fw{position:relative;height:clamp(230px,38vh,420px);border-radius:16px;overflow:hidden;background:#2E5B39;border:1px solid var(--line)}
+.fw canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block;touch-action:manipulation;cursor:crosshair;-webkit-user-select:none;user-select:none}
+.fwinfo{position:absolute;left:8px;top:8px;max-width:calc(100% - 150px);background:rgba(10,20,14,.74);color:#fff;font:600 13px/1.35 var(--text);padding:5px 9px;border-radius:8px;pointer-events:none}
+.fwinfo:empty{display:none}
+.fwbtns{position:absolute;right:8px;top:8px;display:flex;gap:6px}
+.fwbtns button{min-height:38px;padding:0 11px;border-radius:9px;border:0;background:rgba(255,255,255,.93);color:#14231B;font:600 13px var(--text);box-shadow:0 1px 3px rgba(0,0,0,.45)}
+.fwattr{position:absolute;left:6px;bottom:4px;font-size:10px;color:#fff;text-shadow:0 0 3px #000;pointer-events:none}
+.fwcap{margin-top:-6px;font-size:12px}
+#rangeBody:has(#fw:not([hidden])) .yd-main .num{font-size:clamp(66px,21vw,120px)}
+#fwShow{width:100%}
 
 /* stepper & score symbols — circle = under par, square = over par, as on a paper card */
 .stepper{display:inline-flex;align-items:center;gap:6px}
@@ -251,6 +237,14 @@ nav.tabs{flex:none;background:var(--surface);border-top:1px solid var(--line);pa
         </div>
         <button class="navbtn" type="button" data-act="nextHole" aria-label="下一洞">›</button>
       </div>
+      <div class="fw" id="fw" hidden>
+        <canvas id="fwc" role="img" aria-label="球道圖：發球台在下、果嶺在上；點一下量這一點的距離"></canvas>
+        <div class="fwinfo" id="fwInfo"></div>
+        <div class="fwbtns"><button type="button" data-fact="mode" id="fwMode">看果嶺</button><button type="button" data-fact="hide">收起</button></div>
+        <div class="fwattr">© OpenStreetMap 貢獻者</div>
+      </div>
+      <p class="hint fwcap" id="fwCap" hidden>點圖量距離；沙坑、水域旁數字＝到達／越過碼數</p>
+      <button class="btn" type="button" data-fact="show" id="fwShow" hidden>顯示球道圖</button>
       <div class="yd" id="ydBox">
         <div class="yd-main"><div class="lbl">到果嶺中心</div><div class="num" id="ydC">—</div><div class="unit">碼</div></div>
         <div class="yd-side">
@@ -259,7 +253,6 @@ nav.tabs{flex:none;background:var(--surface);border-top:1px solid var(--line);pa
         </div>
       </div>
       <p class="note" id="ydNote"></p>
-      <button class="btn" type="button" data-mact="open" id="mapBtn">在航照圖上標果嶺</button>
       <div class="panel">
         <div><div class="lbl">本洞桿數</div><div class="sub" id="curDiff">還沒記</div></div>
         <div class="stepper"><button class="mini lg" type="button" data-act="curDec" aria-label="本洞減一桿">−</button><span class="sym lg empty" id="curStrokes">–</span><button class="mini lg" type="button" data-act="curInc" aria-label="本洞加一桿">+</button></div>
@@ -269,12 +262,13 @@ nav.tabs{flex:none;background:var(--surface);border-top:1px solid var(--line);pa
         <button class="btn" type="button" id="shotBtn" data-act="shot">標記擊球點</button>
       </div>
       <details class="panel" id="greensPanel">
-        <summary>記錄這洞的果嶺位置</summary>
-        <p class="hint">站在果嶺的那個位置，按下對應按鈕。記一次就好，之後來這座球場都會自動顯示碼數。</p>
+        <summary>記錄這洞的果嶺／發球台位置</summary>
+        <p class="hint">站在果嶺（或發球台）的那個位置，按下對應按鈕。記一次就好，之後來這座球場都會自動顯示碼數與球道圖方向。</p>
         <div class="gbtns">
           <button class="btn" type="button" data-act="mark" data-k="f" id="gF">前緣</button>
           <button class="btn" type="button" data-act="mark" data-k="c" id="gC">中心</button>
           <button class="btn" type="button" data-act="mark" data-k="b" id="gB">後緣</button>
+          <button class="btn" type="button" data-act="mark" data-k="t" id="gT">發球台</button>
         </div>
         <button class="link" type="button" data-act="clearGreen" id="clearGreen">清除這洞的果嶺位置</button>
       </details>
@@ -302,29 +296,6 @@ nav.tabs{flex:none;background:var(--surface);border-top:1px solid var(--line);pa
       <p class="hint" id="addHint"></p>
     </div>
   </div></div>
-</div>
-<div class="mapov" id="mapov" hidden>
-  <div class="mapbar">
-    <button class="mbtn" type="button" data-mact="prev" aria-label="上一洞">‹</button>
-    <div class="mt" id="mapTitle">第 1 洞</div>
-    <button class="mbtn" type="button" data-mact="next" aria-label="下一洞">›</button>
-    <button class="btn primary" type="button" data-mact="close">完成</button>
-  </div>
-  <div id="mapc" role="application" aria-label="航照圖，點一下標記果嶺位置">
-    <div id="mapTiles"></div><div id="mapMarks"></div>
-    <div class="mapzoom"><button type="button" data-mact="zin" aria-label="放大">＋</button><button type="button" data-mact="zout" aria-label="縮小">－</button><button type="button" data-mact="me" aria-label="移到我的位置">◎</button></div>
-    <div class="mapattr" id="mapAttr"></div>
-  </div>
-  <div class="mapfoot">
-    <div class="seg" id="mapSeg">
-      <button type="button" data-mact="k" data-k="f" aria-pressed="false"><span class="dot f"></span>前緣<span class="ok"></span></button>
-      <button type="button" data-mact="k" data-k="c" aria-pressed="true"><span class="dot c"></span>中心<span class="ok"></span></button>
-      <button type="button" data-mact="k" data-k="b" aria-pressed="false"><span class="dot b"></span>後緣<span class="ok"></span></button>
-    </div>
-    <p class="maphint" id="mapHint"></p>
-    <p class="maphint">標好的位置存在這台裝置的瀏覽器，請在打球用的手機上標。</p>
-    <div class="maprow"><button class="link" type="button" data-mact="src" id="mapSrc">換圖源</button><button class="link" type="button" data-mact="clear" id="mapClear">清除這洞</button></div>
-  </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -605,7 +576,7 @@ function renderRange(){
     note=IN_CLAUDE?"這個 Claude 網頁版無法讀取手機定位，所以暫時不能測距與自動判斷球場；請從上方手動選球場，計分卡可以正常使用。要用 GPS，需把 App 放到 HTTPS 網址開啟並允許定位。"
                   :"手機定位被關閉或拒絕。請在瀏覽器的網站設定允許「位置」，再重新整理。";
   }else if(gpsState!=="ok"){note="正在等待 GPS 訊號，請到空曠處。"}
-  else if(!anyG){note="這洞還沒有果嶺位置。可以先按下方「在航照圖上標果嶺」點好，或走到果嶺時用「記錄這洞的果嶺位置」。"}
+  else if(!anyG){note="這洞還沒有果嶺位置。走到果嶺時用下方「記錄這洞的果嶺／發球台位置」記一次就好。"}
   else{
     const miss=[["f","前緣"],["c","中心"],["b","後緣"]].filter(x=>!g[x[0]]).map(x=>x[1]);
     if(miss.length)note="還沒記錄"+miss.join("、")+"，可在下方補記。";
@@ -619,7 +590,9 @@ function renderRange(){
   $("#shotYd").textContent=shotStart&&pos?String(yd(dist(shotStart,pos))):"—";
   $("#shotBtn").textContent=shotStart?"清除擊球點":"標記擊球點";
   [["#gF","f","前緣"],["#gC","c","中心"],["#gB","b","後緣"]].forEach(([id,k,l])=>{const b=$(id);b.classList.toggle("done",!!g[k]);b.textContent=(g[k]?"✓ ":"")+l});
+  {const ut=Array.isArray(info.nine.tees)&&info.nine.tees[info.h],b=$("#gT");b.classList.toggle("done",!!ut);b.textContent=(ut?"✓ ":"")+"發球台"}
   const cg=$("#clearGreen");cg.hidden=!anyG;cg.textContent=pendingClear?"再按一次確認清除":"清除這洞的果嶺位置";cg.classList.toggle("warn",pendingClear);
+  fwReq();
 }
 function emptyCard(msg){return '<div class="empty"><p>'+msg+'</p><button class="btn primary" type="button" data-act="openSheet">選擇球場</button></div>'}
 function renderCard(){
@@ -684,7 +657,7 @@ function renderHist(){
         +miniGrid(h)
         +'<button class="link'+(pendingDel===h.id?" warn":"")+'" type="button" data-act="del" data-id="'+esc(h.id)+'">'+(pendingDel===h.id?"再按一次確認刪除":"刪除這場")+'</button></article>'}).join("");
   }
-  html+='<div class="foot"><span id="syncLine"></span><span>球場位置來源：<a href="https://www.taiwan.net.tw/m1.aspx?sNo=0030361" target="_blank" rel="noopener">交通部觀光署 台灣觀光資訊網</a>（參考點多為會館位置）。部分球場的洞號、標準桿與果嶺位置取自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a>（ODbL 授權）。碼數為 GPS 直線距離，不含高低差。</span></div>';
+  html+='<div class="foot"><span id="syncLine"></span><span>球場位置來源：<a href="https://www.taiwan.net.tw/m1.aspx?sNo=0030361" target="_blank" rel="noopener">交通部觀光署 台灣觀光資訊網</a>（參考點多為會館位置）。部分球場的洞號、標準桿、果嶺位置與球道圖（球道、果嶺、沙坑、水域、發球台）取自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a>（ODbL 授權）。碼數為 GPS 直線距離，不含高低差。</span></div>';
   el.innerHTML=html;renderSync();
 }
 function renderSync(){
@@ -694,6 +667,7 @@ function renderSync(){
 function renderTabs(){
   document.querySelectorAll(".tab").forEach(b=>{if(b.dataset.tab===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   $("#v-range").hidden=tab!=="range";$("#v-card").hidden=tab!=="card";$("#v-hist").hidden=tab!=="hist";
+  if(tab==="range")fwReq();
 }
 function renderAll(){renderHeader();renderGps();renderRange();renderCard();renderHist();renderTabs()}
 
@@ -774,6 +748,8 @@ document.addEventListener("click",e=>{
       if(!r)break;
       if(!pos){toast("需要定位才能記錄果嶺位置");break}
       const info=holeInfo(r.hole);const k=t.dataset.k;
+      if(k==="t"){const n=info.nine;if(!Array.isArray(n.tees))n.tees=Array(9).fill(null);n.tees[info.h]=[+pos.lat.toFixed(6),+pos.lon.toFixed(6)];save("courses");
+        toast("已記錄第 "+(r.hole+1)+" 洞發球台"+(pos.acc>15?"（目前誤差 ±"+yd(pos.acc)+" 碼）":""));renderRange();break}
       const g=Object.assign({},info.green||{});delete g.src;g[k]=[+pos.lat.toFixed(6),+pos.lon.toFixed(6)];
       info.nine.greens[info.h]=g;save("courses");
       const lab={f:"前緣",c:"中心",b:"後緣"}[k];
@@ -807,136 +783,195 @@ document.addEventListener("change",e=>{
 $("#q").addEventListener("input",renderSheet);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden)closeSheet()});
 
-/* ---------- 航照圖標果嶺 ---------- */
-const TILES={
-  nlsc:{name:"國土測繪中心",url:"https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}",max:20,attr:"影像：內政部國土測繪中心"},
-  esri:{name:"Esri",url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",max:19,attr:"Imagery © Esri, Maxar, Earthstar Geographics"}
-};
-const MP={open:false,src:lsGet("tiles")==="esri"?"esri":"nlsc",z:17,x:.5,y:.5,k:"c",imgs:new Map(),ptrs:new Map(),raf:0,clr:false};
+/* ---------- 球道圖：OpenStreetMap 輪廓線條圖（球道、果嶺、沙坑、水域、發球台） ---------- */
+/* osm.json：同一個網站的資料檔，© OpenStreetMap 貢獻者（ODbL）。座標以 1e-5 度整數差分儲存 */
+const GEOV=1;
 const mX=lon=>(lon+180)/360;
 const mY=lat=>{const s=Math.sin(lat*Math.PI/180);return .5-Math.log((1+s)/(1-s))/(4*Math.PI)};
 const lonOf=x=>x*360-180;
 const latOf=y=>{const n=Math.PI-2*Math.PI*y;return 180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n)))};
-const clampZ=z=>Math.max(10,Math.min(21.5,z));
-function mapReq(){if(!MP.raf)MP.raf=requestAnimationFrame(mapDraw)}
-function holeLL(i){const g=holeInfo(i).green;return g&&(g.c||g.f||g.b)||null}
-function mapDraw(){
-  MP.raf=0;if(!MP.open)return;
-  const c=$("#mapc"),W=c.clientWidth,H=c.clientHeight;if(!W||!H)return;
-  const T=TILES[MP.src],tz=Math.max(0,Math.min(T.max,Math.floor(MP.z))),n=2**tz;
-  const ws=256*2**MP.z,ts=ws/n,x0=MP.x*ws-W/2,y0=MP.y*ws-H/2;
-  const keep=new Set(),layer=$("#mapTiles");
-  for(let ty=Math.floor(y0/ts);ty<=Math.floor((y0+H)/ts);ty++){if(ty<0||ty>=n)continue;
-    for(let tx=Math.floor(x0/ts);tx<=Math.floor((x0+W)/ts);tx++){
-      const xw=((tx%n)+n)%n,key=MP.src+"/"+tz+"/"+xw+"/"+ty;keep.add(key);
-      let im=MP.imgs.get(key);
-      if(!im){im=new Image();im.alt="";im.draggable=false;im.src=T.url.replace("{z}",tz).replace("{x}",xw).replace("{y}",ty);MP.imgs.set(key,im);layer.appendChild(im)}
-      im.style.transform="translate("+Math.round(tx*ts-x0)+"px,"+Math.round(ty*ts-y0)+"px)";
-      im.style.width=im.style.height=(Math.ceil(ts)+1)+"px";
-    }}
-  for(const [key,im] of MP.imgs)if(!keep.has(key)){im.remove();MP.imgs.delete(key)}
-  const at=(lat,lon,cls,txt)=>{const sx=mX(lon)*ws-x0,sy=mY(lat)*ws-y0;if(sx<-40||sy<-40||sx>W+40||sy>H+40)return "";return '<div class="mk '+cls+'" style="left:'+sx.toFixed(1)+'px;top:'+sy.toFixed(1)+'px">'+txt+'</div>'};
-  let h="";const r=S.current;
-  if(r){
-    for(let i=0;i<18;i++){if(i===r.hole)continue;const p=holeLL(i);if(p)h+=at(p[0],p[1],"oth",i+1)}
-    const g=holeInfo(r.hole).green||{};
-    for(const [k,l] of [["f","前"],["b","後"],["c","中"]])if(g[k])h+=at(g[k][0],g[k][1],"cur "+k,l);
-  }
-  if(pos)h+=at(pos.lat,pos.lon,"me","");
-  $("#mapMarks").innerHTML=h;
+const GEO={d:null,c:{}};
+(function(){const c=lsGet("osmgeo");if(c&&c.v===GEOV&&c.c)GEO.d=c})();
+function geoInit(){
+  if(IN_CLAUDE)return;
+  fetch("osm.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{
+    if(!j||j.v!==GEOV||!j.c)return;
+    if(!GEO.d||GEO.d.date!==j.date){GEO.d=j;GEO.c={};lsSet("osmgeo",j)}
+    fwReq();
+  }).catch(()=>{});
 }
-function mapCenter(first){
-  const r=S.current;let p=holeLL(r.hole),z=18;
-  if(!p){
-    if(!first)return;
-    p=holeLL((r.hole+17)%18)||holeLL((r.hole+1)%18);z=17;
-    if(!p){const c=courseById(r.courseId);z=16;if(c&&c.lat!=null)p=[c.lat,c.lon];else if(pos)p=[pos.lat,pos.lon];else{p=[25.0,121.4];z=11}}
-  }
-  MP.x=mX(p[1]);MP.y=mY(p[0]);MP.z=z;
-}
-function mapNextK(){const g=holeInfo(S.current.hole).green||{};MP.k=["c","f","b"].find(k=>!g[k])||"c"}
-function mapUi(){
-  const r=S.current;if(!r)return;const info=holeInfo(r.hole),g=info.green||{};
-  $("#mapTitle").textContent="第 "+(r.hole+1)+" 洞 · 標準桿 "+info.par;
-  document.querySelectorAll("#mapSeg [data-k]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.k===MP.k));b.querySelector(".ok").textContent=g[b.dataset.k]?"✓":""});
-  $("#mapHint").textContent="拖曳移動、兩指縮放；點一下地圖放「"+{f:"前緣",c:"中心",b:"後緣"}[MP.k]+"」，放錯再點一次就會改。";
-  $("#mapSrc").textContent="換圖源（目前："+TILES[MP.src].name+"）";
-  $("#mapAttr").textContent=TILES[MP.src].attr;
-  const cb=$("#mapClear");cb.hidden=!(g.f||g.c||g.b);cb.textContent=MP.clr?"再按一次確認清除":"清除這洞";cb.classList.toggle("warn",MP.clr);
-}
-function mapOpen(){if(!S.current)return;MP.open=true;MP.clr=false;$("#mapov").hidden=false;mapCenter(true);mapNextK();mapUi();mapReq()}
-function mapClose(){MP.open=false;MP.ptrs.clear();$("#mapov").hidden=true;renderRange()}
-function mapPlace(px,py){
-  const r=S.current;if(!r)return;
-  const c=$("#mapc"),ws=256*2**MP.z;
-  const wx=MP.x+(px-c.clientWidth/2)/ws,wy=MP.y+(py-c.clientHeight/2)/ws;
-  const info=holeInfo(r.hole),g=Object.assign({},info.green||{});
-  g[MP.k]=[+latOf(wy).toFixed(6),+lonOf(wx).toFixed(6)];g.src="m";
-  info.nine.greens[info.h]=g;save("courses");
-  const nx=["c","f","b"].find(k=>!g[k]);if(nx)MP.k=nx;
-  MP.clr=false;mapUi();mapReq();renderRange();
-}
-(function(){
-  const c=$("#mapc");let start=null,moved=false,pinch=null;
-  const pt=e=>{const b=c.getBoundingClientRect();return {x:e.clientX-b.left,y:e.clientY-b.top}};
-  const anchor=m=>{const ws=256*2**MP.z;return {wx:MP.x+(m.x-c.clientWidth/2)/ws,wy:MP.y+(m.y-c.clientHeight/2)/ws}};
-  c.addEventListener("pointerdown",e=>{
-    if(e.target.closest(".mapzoom"))return;
-    try{c.setPointerCapture(e.pointerId)}catch(_){}
-    MP.ptrs.set(e.pointerId,pt(e));
-    if(MP.ptrs.size===1){start=Object.assign(pt(e),{t:Date.now()});moved=false;pinch=null}
-    else if(MP.ptrs.size===2){const [a,b]=[...MP.ptrs.values()];const m={x:(a.x+b.x)/2,y:(a.y+b.y)/2};pinch=Object.assign({d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:MP.z},anchor(m));moved=true}
+const dLL=(a,b)=>dist(P(a),P(b));
+function gCenter(g){if(!g)return null;if(g.c)return g.c;if(g.f&&g.b)return [(g.f[0]+g.b[0])/2,(g.f[1]+g.b[1])/2];return g.f||g.b||null}
+function pathLen(p){let s=0;for(let i=1;i<p.length;i++)s+=dLL(p[i-1],p[i]);return s}
+function geoCourse(id){
+  if(!GEO.d||!id)return null;if(GEO.c[id])return GEO.c[id];
+  const raw=GEO.d.c[id];if(!raw)return null;
+  const o={};
+  for(const k of ["f","w","b","t","g","h"])o[k]=(raw[k]||[]).map(a=>{
+    const p=[];let la=0,lo=0;for(let i=0;i+1<a.length;i+=2){la+=a[i];lo+=a[i+1];p.push([la/1e5,lo/1e5])}
+    const bb=[90,180,-90,-180];let sa=0,so=0;
+    for(const q of p){if(q[0]<bb[0])bb[0]=q[0];if(q[1]<bb[1])bb[1]=q[1];if(q[0]>bb[2])bb[2]=q[0];if(q[1]>bb[3])bb[3]=q[1];sa+=q[0];so+=q[1]}
+    return {p,bb,cen:[sa/p.length,so/p.length]};
   });
-  c.addEventListener("pointermove",e=>{
-    if(!MP.ptrs.has(e.pointerId))return;
-    const p=pt(e),prev=MP.ptrs.get(e.pointerId);MP.ptrs.set(e.pointerId,p);
-    if(MP.ptrs.size>=2&&pinch){
-      const [a,b]=[...MP.ptrs.values()];const m={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
-      MP.z=clampZ(pinch.z+Math.log2((Math.hypot(a.x-b.x,a.y-b.y)||1)/pinch.d));
-      const ws=256*2**MP.z;MP.x=pinch.wx-(m.x-c.clientWidth/2)/ws;MP.y=pinch.wy-(m.y-c.clientHeight/2)/ws;mapReq();
-    }else if(MP.ptrs.size===1){
-      if(start&&Math.hypot(p.x-start.x,p.y-start.y)>8)moved=true;
-      if(moved){const ws=256*2**MP.z;MP.x-=(p.x-prev.x)/ws;MP.y-=(p.y-prev.y)/ws;mapReq()}
-    }
-  });
-  const end=e=>{
-    if(!MP.ptrs.has(e.pointerId))return;MP.ptrs.delete(e.pointerId);
-    if(e.type==="pointerup"&&MP.ptrs.size===0&&!moved&&start&&Date.now()-start.t<700){const p=pt(e);mapPlace(p.x,p.y)}
-    if(MP.ptrs.size<2)pinch=null;
-    if(MP.ptrs.size===0)start=null;
-  };
-  c.addEventListener("pointerup",end);c.addEventListener("pointercancel",end);
-  c.addEventListener("wheel",e=>{
-    e.preventDefault();const p=pt(e),a=anchor(p);
-    MP.z=clampZ(MP.z-e.deltaY*0.0025);const ws=256*2**MP.z;
-    MP.x=a.wx-(p.x-c.clientWidth/2)/ws;MP.y=a.wy-(p.y-c.clientHeight/2)/ws;mapReq();
-  },{passive:false});
-  window.addEventListener("resize",()=>{if(MP.open)mapReq()});
-  setInterval(()=>{if(MP.open)mapReq()},3000);
-})();
-document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-mact]");if(!t)return;
-  const a=t.dataset.mact,r=S.current;
-  if(a==="open"){mapOpen();return}
-  if(!MP.open||!r)return;
-  if(a==="close")mapClose();
-  else if(a==="prev"||a==="next"){r.hole=(r.hole+(a==="next"?1:17))%18;shotStart=null;pendingClear=false;save("current");mapCenter(false);mapNextK();MP.clr=false;mapUi();mapReq();renderRange();renderCard()}
-  else if(a==="k"){MP.k=t.dataset.k;MP.clr=false;mapUi()}
-  else if(a==="zin"||a==="zout"){MP.z=clampZ(Math.round(MP.z)+(a==="zin"?1:-1));mapReq()}
-  else if(a==="src"){MP.src=MP.src==="nlsc"?"esri":"nlsc";lsSet("tiles",MP.src);for(const im of MP.imgs.values())im.remove();MP.imgs.clear();mapUi();mapReq()}
-  else if(a==="me"){if(pos){MP.x=mX(pos.lon);MP.y=mY(pos.lat);MP.z=Math.max(MP.z,17);mapReq()}else toast("目前沒有定位")}
-  else if(a==="clear"){
-    if(!MP.clr){MP.clr=true;mapUi();setTimeout(()=>{if(MP.clr){MP.clr=false;mapUi()}},5000);return}
-    const info=holeInfo(r.hole);info.nine.greens[info.h]=null;MP.clr=false;MP.k="c";save("courses");mapUi();mapReq();renderRange();toast("已清除這洞的果嶺位置");
+  return GEO.c[id]=o;
+}
+/* OSM 的球洞線（發球台→果嶺）：找終點離這洞果嶺 60 公尺內的那條 */
+function holeLine(id,G){
+  const o=geoCourse(id);if(!o||!G)return null;let best=null,bd=60;
+  for(const h of o.h){const p=h.p;if(p.length<2)continue;
+    const e=dLL(p[p.length-1],G),s=dLL(p[0],G);
+    if(e<bd){bd=e;best=p}if(s<bd){bd=s;best=p.slice().reverse()}}
+  return best;
+}
+/* 發球台：自己標的優先，其次 OSM 球洞線起點 */
+function holeTee(i){
+  const r=S.current;if(!r)return null;const info=holeInfo(i,r);
+  const u=Array.isArray(info.nine.tees)?info.nine.tees[info.h]:null;
+  if(u)return {p:u,src:"u"};
+  const l=holeLine(r.courseId,gCenter(info.green));
+  return l?{p:l[0],src:"o"}:null;
+}
+function greenPoly(id,G){const o=geoCourse(id);if(!o||!G)return null;let best=null,bd=20;for(const f of o.g){const d=dLL(f.cen,G);if(d<bd){bd=d;best=f}}return best}
+/* 沙坑、水域：在擊球方向前方、離擊球線 35 公尺內的，算到達（最近點）與越過（最遠點）碼數 */
+function hazards(o,O,G){
+  const k=Math.PI/180,R=6371008.8,cl=Math.cos(O[0]*k);
+  const loc=q=>[(q[1]-O[1])*k*cl*R,(q[0]-O[0])*k*R];
+  const g=loc(G),Lg=Math.hypot(g[0],g[1])||1,ux=g[0]/Lg,uy=g[1]/Lg;
+  const out=[];
+  for(const t of ["b","w"])for(const f of o[t]){
+    if(dLL(f.cen,O)>Lg+400)continue;
+    let mnA=1e9,mxA=-1e9,mnL=1e9,lp=false,ln=false,rch=1e9,car=0;
+    for(const q of f.p){const v=loc(q),a=v[0]*ux+v[1]*uy,l=v[0]*uy-v[1]*ux,dd=Math.hypot(v[0],v[1]);
+      if(a<mnA)mnA=a;if(a>mxA)mxA=a;if(l>0)lp=true;else ln=true;if(Math.abs(l)<mnL)mnL=Math.abs(l);if(dd<rch)rch=dd;if(dd>car)car=dd}
+    if(lp&&ln)mnL=0;
+    if(mxA<15||mnA>Lg+25||mnL>35)continue;
+    out.push({t,f,r:yd(rch),c:yd(car)});
   }
+  return out.sort((a,b)=>a.r-b.r).slice(0,6);
+}
+const GST={f:["#5C9A4E","rgba(255,255,255,.22)",1],t:["#6FAF5E","rgba(255,255,255,.55)",1],w:["#3F86CF","#8EC5FF",1.4],b:["#E6D6A8","#C9B47E",1.2],g:["#7CCB68","rgba(255,255,255,.75)",1.3]};
+function geoPaint(ctx,o,toS,vb,hl){
+  for(const k of ["f","t","w","b","g"]){const [fill,stroke,lw]=GST[k];
+    for(const f of o[k]){const b=f.bb;if(b[2]<vb[0]||b[0]>vb[2]||b[3]<vb[1]||b[1]>vb[3])continue;
+      ctx.beginPath();f.p.forEach((q,i)=>{const s=toS(q[0],q[1]);if(i)ctx.lineTo(s[0],s[1]);else ctx.moveTo(s[0],s[1])});ctx.closePath();
+      ctx.fillStyle=f===hl?"#93DD7E":fill;ctx.fill();
+      ctx.strokeStyle=f===hl?"#fff":stroke;ctx.lineWidth=f===hl?2.2:lw;ctx.stroke()}}
+}
+const FW={hide:lsGet("fwhide")===1,mode:"hole",tgt:null,ax:null,hk:"",raf:0,v:null};
+function fwReq(){if(!FW.raf)FW.raf=requestAnimationFrame(fwDraw)}
+function fwTag(ctx,L,placed){
+  const big=L.k==="d";ctx.font=(big?"700 17px ":"700 13px ")+'"Barlow Condensed","Noto Sans TC",sans-serif';
+  const w=Math.ceil(ctx.measureText(L.t).width)+(big?14:10),h=big?24:20;
+  let x0=L.x-w/2;
+  if(L.hb){const fits=x=>x>=4&&x+w<=L.W-4;x0=L.dir>0?L.hb[1]+5:L.hb[0]-5-w;
+    if(!fits(x0)){const alt=L.dir>0?L.hb[0]-5-w:L.hb[1]+5;x0=fits(alt)?alt:Math.max(4,Math.min(L.W-4-w,x0))}}
+  for(const dy of [0,-(h+4),h+4]){const x=x0,y=L.y-h/2+dy;
+    if(placed.some(p=>x<p.x+p.w&&p.x<x+w&&y<p.y+p.h&&p.y<y+h))continue;
+    placed.push({x,y,w,h});ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,6);else ctx.rect(x,y,w,h);
+    ctx.fillStyle=big?"rgba(10,20,14,.82)":"rgba(10,20,14,.72)";ctx.fill();
+    if(!big){ctx.lineWidth=1.5;ctx.strokeStyle=L.k==="w"?"#7CC4FF":"#F5D98A";ctx.stroke()}
+    ctx.fillStyle="#fff";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(L.t,x+w/2,y+h/2+1);return;
+  }
+}
+function fwDot(ctx,s,rad,fill,stroke){ctx.beginPath();ctx.arc(s[0],s[1],rad,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=stroke;ctx.stroke()}
+function fwDraw(){
+  FW.raf=0;const r=S.current,box=$("#fw");
+  /* 只在這座球場有 OSM 輪廓、這洞也有果嶺位置時顯示 */
+  const o=r?geoCourse(r.courseId):null,info=r?holeInfo(r.hole):null,g=info&&info.green||{},G=gCenter(g);
+  const off=!o||!G||FW.hide;box.hidden=off;$("#fwCap").hidden=off;$("#fwShow").hidden=!(o&&G&&FW.hide);
+  if(off||tab!=="range")return;
+  const W=box.clientWidth,H=box.clientHeight;if(!W||!H)return;
+  const cv=$("#fwc"),dpr=Math.min(3,window.devicePixelRatio||1),cw=Math.round(W*dpr),ch=Math.round(H*dpr);
+  if(cv.width!==cw||cv.height!==ch){cv.width=cw;cv.height=ch}
+  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle="#2E5B39";ctx.fillRect(0,0,W,H);
+  const hk=r.courseId+":"+r.hole;if(FW.hk!==hk){FW.hk=hk;FW.tgt=null;FW.ax=null;FW.mode="hole"}
+  const tee=holeTee(r.hole),line=holeLine(r.courseId,G);
+  const pp=pos&&pos.acc<100?[pos.lat,pos.lon]:null;
+  const L=G&&tee?dLL(tee.p,G):0;
+  const onHole=!!(pp&&dLL(pp,G)<(L?Math.min(700,L*1.25+50):600));
+  const O=onHole?pp:(tee?tee.p:null);
+  /* 方向：發球台→果嶺朝上；沒有發球台時用人到果嶺的方向（移動 15 公尺以上才轉） */
+  let A=tee?tee.p:null;
+  if(!A&&onHole){if(!FW.ax||dLL(FW.ax,pp)>15)FW.ax=pp;A=FW.ax}
+  let beta=0;
+  if(A){const dx=mX(G[1])-mX(A[1]),dy=mY(G[0])-mY(A[0]);if(dx||dy)beta=Math.atan2(dx,-dy)}
+  const ring=(c,m)=>{const a=m/111320,b=m/(111320*Math.cos(c[0]*Math.PI/180));return [[c[0]+a,c[1]],[c[0]-a,c[1]],[c[0],c[1]+b],[c[0],c[1]-b]]};
+  let pts=[],pad=[56,22,26,22],zmax=19.3;
+  if(FW.mode==="green"){const gp=greenPoly(r.courseId,G);pts=[G,g.f,g.b].filter(Boolean).concat(ring(G,22),gp?gp.p:[]);zmax=20;pad=[60,30,30,30]}
+  else if(onHole)pts=[pp,G,g.f,g.b].filter(Boolean).concat(ring(G,25));
+  else if(A)pts=[A,G,g.f,g.b].filter(Boolean).concat(line||[],ring(G,20));
+  else pts=ring(G,140);
+  let z=16,cx0=.5,cy0=.5;
+  {
+    const rf=G,bx=mX(rf[1]),by=mY(rf[0]),ca=Math.cos(-beta),sa=Math.sin(-beta);
+    let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;
+    for(const q of pts){const dx=mX(q[1])-bx,dy=mY(q[0])-by,x=dx*ca-dy*sa,y=dx*sa+dy*ca;if(x<x1)x1=x;if(x>x2)x2=x;if(y<y1)y1=y;if(y>y2)y2=y}
+    const aw=Math.max(40,W-pad[1]-pad[3]),ah=Math.max(40,H-pad[0]-pad[2]);
+    const s=Math.min(aw/Math.max(x2-x1,1e-12),ah/Math.max(y2-y1,1e-12));
+    z=Math.max(14,Math.min(zmax,Math.log2(s/256)));
+    const w0=256*2**z,mx=(x1+x2)/2-((pad[3]-pad[1])/2)/w0,my=(y1+y2)/2-((pad[0]-pad[2])/2)/w0;
+    cx0=bx+mx*Math.cos(beta)-my*Math.sin(beta);cy0=by+mx*Math.sin(beta)+my*Math.cos(beta);
+  }
+  const ws=256*2**z,cx=cx0*ws,cy=cy0*ws,ca=Math.cos(-beta),sa=Math.sin(-beta),cb=Math.cos(beta),sb=Math.sin(beta);
+  const toS=(la,lo)=>{const dx=mX(lo)*ws-cx,dy=mY(la)*ws-cy;return [W/2+dx*ca-dy*sa,H/2+dx*sa+dy*ca]};
+  const toW=(sx,sy)=>{const dx=sx-W/2,dy=sy-H/2;return [cx+dx*cb-dy*sb,cy+dx*sb+dy*cb]};
+  const toLL=(sx,sy)=>{const w=toW(sx,sy);return [latOf(w[1]/ws),lonOf(w[0]/ws)]};
+  FW.v={toS,toLL};
+  /* OSM 輪廓 */
+  const vl=[toLL(0,0),toLL(W,0),toLL(0,H),toLL(W,H)];
+  const vb=[Math.min(...vl.map(p=>p[0])),Math.min(...vl.map(p=>p[1])),Math.max(...vl.map(p=>p[0])),Math.max(...vl.map(p=>p[1]))];
+  geoPaint(ctx,o,toS,vb,greenPoly(r.courseId,G));
+  if(line&&FW.mode!=="green"){ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle="rgba(255,255,255,.5)";ctx.lineWidth=1.3;ctx.beginPath();line.forEach((q,i)=>{const s=toS(q[0],q[1]);if(i)ctx.lineTo(s[0],s[1]);else ctx.moveTo(s[0],s[1])});ctx.stroke();ctx.restore()}
+  /* 距離線、標記、數字 */
+  const placed=[],labels=[];
+  const seg=(a,b)=>{const s1=toS(a[0],a[1]),s2=toS(b[0],b[1]);ctx.beginPath();ctx.moveTo(s1[0],s1[1]);ctx.lineTo(s2[0],s2[1]);ctx.lineWidth=4;ctx.strokeStyle="rgba(0,0,0,.45)";ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle="#fff";ctx.stroke();labels.push({x:(s1[0]+s2[0])/2,y:(s1[1]+s2[1])/2,t:yd(dLL(a,b))+" 碼",k:"d"})};
+  if(FW.tgt){if(O)seg(O,FW.tgt);seg(FW.tgt,G)}else if(O)seg(O,G);
+  if(O){const so=toS(O[0],O[1]),sg=toS(G[0],G[1]);
+    hazards(o,O,G).forEach(h=>{let x1=1e9,x2=-1e9,y1=1e9,y2=-1e9;for(const q of h.f.p){const s=toS(q[0],q[1]);if(s[0]<x1)x1=s[0];if(s[0]>x2)x2=s[0];if(s[1]<y1)y1=s[1];if(s[1]>y2)y2=s[1]}
+      const cy=(y1+y2)/2,cx=(x1+x2)/2,t=Math.abs(sg[1]-so[1])>1?(cy-so[1])/(sg[1]-so[1]):0,xl=so[0]+t*(sg[0]-so[0]);
+      labels.push({x:cx,y:cy,hb:[x1,x2],dir:cx>=xl?1:-1,W,t:h.r===h.c?String(h.r):"到"+h.r+" 越"+h.c,k:h.t})})}
+  const mark=(s,rad)=>placed.push({x:s[0]-rad,y:s[1]-rad,w:rad*2,h:rad*2});
+  if(tee){const s=toS(tee.p[0],tee.p[1]);ctx.beginPath();if(ctx.roundRect)ctx.roundRect(s[0]-6,s[1]-6,12,12,3);else ctx.rect(s[0]-6,s[1]-6,12,12);ctx.fillStyle="#fff";ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#14231B";ctx.stroke();mark(s,8)}
+  if(g.f){const s=toS(g.f[0],g.f[1]);fwDot(ctx,s,4.5,"#2F80ED","#fff")}
+  if(g.b){const s=toS(g.b[0],g.b[1]);fwDot(ctx,s,4.5,"#C8312B","#fff")}
+  {const s=toS(G[0],G[1]);ctx.lineWidth=2;ctx.strokeStyle="#fff";ctx.beginPath();ctx.moveTo(s[0],s[1]);ctx.lineTo(s[0],s[1]-20);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(s[0]+1,s[1]-20);ctx.lineTo(s[0]+13,s[1]-15.5);ctx.lineTo(s[0]+1,s[1]-11);ctx.closePath();ctx.fillStyle="#E9B51F";ctx.fill();
+    fwDot(ctx,s,3,"#fff","#14231B");placed.push({x:s[0]-4,y:s[1]-22,w:18,h:26})}
+  if(FW.tgt){const s=toS(FW.tgt[0],FW.tgt[1]);ctx.beginPath();ctx.arc(s[0],s[1],9,0,Math.PI*2);ctx.lineWidth=4;ctx.strokeStyle="rgba(0,0,0,.45)";ctx.stroke();ctx.lineWidth=2.5;ctx.strokeStyle="#fff";ctx.stroke();fwDot(ctx,s,2.5,"#fff","#fff");mark(s,11)}
+  if(pp){const s=toS(pp[0],pp[1]),mpp=156543.03392*Math.cos(pp[0]*Math.PI/180)/2**z,ar=pos.acc/mpp;
+    if(ar>9&&ar<Math.max(W,H)){ctx.beginPath();ctx.arc(s[0],s[1],ar,0,Math.PI*2);ctx.fillStyle="rgba(26,115,232,.16)";ctx.fill()}
+    fwDot(ctx,s,7,"#1A73E8","#fff");mark(s,9)}
+  let inf="";
+  if(FW.tgt&&!O)inf="點的位置到果嶺中心";
+  else if(onHole)inf="從您的位置"+(FW.tgt?" · 再點目標點可取消":"");
+  else if(tee)inf="從發球台"+(tee.src==="u"?"（自己標的）":"")+(FW.tgt?" · 再點目標點可取消":" · 全長 "+yd(tee.src==="o"&&line?pathLen(line):L)+" 碼");
+  else inf="沒有發球台位置，人到球道上會自動轉向";
+  $("#fwInfo").textContent=inf;
+  {const bb=box.getBoundingClientRect();for(const el of [$("#fwInfo"),box.querySelector(".fwbtns")]){const q=el.getBoundingClientRect();if(q.width)placed.push({x:q.left-bb.left-3,y:q.top-bb.top-3,w:q.width+6,h:q.height+6})}}
+  for(const t of labels)fwTag(ctx,t,placed);
+  $("#fwMode").textContent=FW.mode==="green"?"看全洞":"看果嶺";
+}
+$("#fwc").addEventListener("click",e=>{
+  if(!FW.v||!S.current)return;const b=e.currentTarget.getBoundingClientRect(),x=e.clientX-b.left,y=e.clientY-b.top;
+  if(FW.tgt){const s=FW.v.toS(FW.tgt[0],FW.tgt[1]);if(Math.hypot(s[0]-x,s[1]-y)<24){FW.tgt=null;fwReq();return}}
+  FW.tgt=FW.v.toLL(x,y);fwReq();
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&MP.open)mapClose()});
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-fact]");if(!t)return;const a=t.dataset.fact;
+  if(a==="hide"){FW.hide=true;lsSet("fwhide",1)}
+  else if(a==="show"){FW.hide=false;lsSet("fwhide",0)}
+  else if(a==="mode")FW.mode=FW.mode==="green"?"hole":"green";
+  fwReq();
+});
+window.addEventListener("resize",fwReq);
+try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fwReq)}catch(e){}
 
 /* ---------- boot ---------- */
 ensureRound();
 renderAll();
 startGps();
 initCloud();
+geoInit();
 /* 請瀏覽器把資料視為長期保存（不支援就略過） */
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
 </script>
